@@ -31,7 +31,8 @@ namespace DBMS
             DBParams dbParams = new DBParams(textbox_servername.Text, textbox_dbname.Text, textbox_dbname.Text,
                                              textbox_dbfilename.Text, "", "", textbox_userid.Text, textbox_userpwd.Text);
             Database newDB = new Database(dbParams);
-            newDB.CreateDatabase(dbParams, Global.masterParams);
+            newDB.CreateDatabase(Global.masterParams);
+            Global.databases.Add(newDB);
         }
 
         private void toggle_pwd_btn_Click(object sender, EventArgs e)
