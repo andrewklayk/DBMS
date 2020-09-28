@@ -10,17 +10,16 @@ using System.Windows.Forms;
 
 namespace DBMS
 {
-    public partial class Form1 : Form
+    public partial class create_db_form : Form
     {
-        public Form1()
+        public create_db_form()
         {
             InitializeComponent();
         }
 
-        private void btn_newdb_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            create_db_form createDbForm = new create_db_form();
-            createDbForm.Show();
+            DBParams dbParams = new DBParams();
         }
     }
 }

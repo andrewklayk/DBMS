@@ -28,13 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.btn_newdb = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // btn_newdb
+            // 
+            this.btn_newdb.Location = new System.Drawing.Point(808, 12);
+            this.btn_newdb.Name = "btn_newdb";
+            this.btn_newdb.Size = new System.Drawing.Size(94, 33);
+            this.btn_newdb.TabIndex = 0;
+            this.btn_newdb.Text = "New Database";
+            this.btn_newdb.UseVisualStyleBackColor = true;
+            this.btn_newdb.Click += new System.EventHandler(this.btn_newdb_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(914, 531);
+            this.Controls.Add(this.btn_newdb);
             this.Name = "Form1";
             this.Text = "DBMS Interface";
             this.ResumeLayout(false);
@@ -42,6 +54,8 @@
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btn_newdb;
     }
 }
 
