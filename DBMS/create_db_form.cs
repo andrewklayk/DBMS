@@ -17,12 +17,26 @@ namespace DBMS
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void create_db_btn_Click(object sender, EventArgs e)
         {
-            DBParams dbParams = new DBParams(textbox_servername.Text, textbox_dbname.Text, textbox_dbname.Text, textbox_dbfilename.Text, "", "", textbox_userid.Text, textbox_userpwd.Text);
-            DBParams masterDbParams = new DBParams(textbox_servername.Text, "master", "", "", "", "", textbox_userid.Text, textbox_userpwd.Text);
+            if (textbox_servername.Text == ""/* || 
+                textbox_dbfilename.Text == "" */|| 
+                textbox_dbname.Text == ""/* || 
+                textbox_userid.Text == "" ||
+                textbox_userpwd.Text == ""*/)
+            {
+                MessageBox.Show("Fill in all the required fields!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            DBParams dbParams = new DBParams(textbox_servername.Text, textbox_dbname.Text, textbox_dbname.Text,
+                                             textbox_dbfilename.Text, "", "", textbox_userid.Text, textbox_userpwd.Text);
             Database newDB = new Database(dbParams);
-            newDB.CreateDatabase(dbParams, masterDbParams);
+            newDB.CreateDatabase(dbParams, Global.masterParams);
+        }
+
+        private void toggle_pwd_btn_Click(object sender, EventArgs e)
+        {
+            textbox_userpwd.UseSystemPasswordChar = !textbox_userpwd.UseSystemPasswordChar;
         }
     }
 }

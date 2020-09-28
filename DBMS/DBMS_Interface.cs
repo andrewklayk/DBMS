@@ -22,5 +22,14 @@ namespace DBMS
             create_db_form createDbForm = new create_db_form();
             createDbForm.Show();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            Connect_form connectForm = new Connect_form();
+            if (connectForm.ShowDialog() == DialogResult.Cancel)
+            {
+                this.Close();
+            }
+        }
     }
 }
