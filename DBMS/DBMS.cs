@@ -8,10 +8,10 @@ using System.Windows.Forms;
 
 namespace DBMS
 {
-    class Database
+    public class Database
     {
         private string connectionString;
-        Database(DBParams dBParams)
+        public Database(DBParams dBParams)
         {
             connectionString = BuildConnectionString(dBParams);
         }
@@ -21,22 +21,24 @@ namespace DBMS
             string sqlCreateDbQuery;
             con.ConnectionString = BuildConnectionString(masterParams);
             sqlCreateDbQuery = $" CREATE DATABASE {dbParams.DBName} " +
-                $"ON PRIMARY (NAME = {dbParams.DBFileName}, FILENAME = {dbParams.DBFilePath}) " +
-                $"LOG ON (NAME = {dbParams.LogFileName}, FILENAME = {dbParams.LogFilePath})";
-            SqlCommand createCommand = new SqlCommand(sqlCreateDbQuery, con);
-            try
+                $"ON PRIMARY (NAME = {dbParams.DBFileName}, FILENAME = '{dbParams.DBFilePath}')";/* +
+                $"LOG ON (NAME = {dbParams.LogFileName}, FILENAME = {dbParams.LogFilePath})";*/
+            using (SqlCommand createCommand = new SqlCommand(sqlCreateDbQuery, con))
             {
-                con.Open();
-                createCommand.ExecuteNonQuery();
-                MessageBox.Show($"Database {dbParams.DBName} created succesfully!", "DBMS", MessageBoxButtons.OK);
-            }
-            catch(System.Exception e)
-            {
-                MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-            }
-            finally
-            {
-                con.Close();
+                try
+                {
+                    con.Open();
+                    createCommand.ExecuteNonQuery();
+                    MessageBox.Show($"Database {dbParams.DBName} created succesfully!", "DBMS", MessageBoxButtons.OK);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
+                }
+                finally
+                {
+                    con.Close();
+                }
             }
             return;
         }

@@ -19,7 +19,10 @@ namespace DBMS
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DBParams dbParams = new DBParams();
+            DBParams dbParams = new DBParams(textbox_servername.Text, textbox_dbname.Text, textbox_dbname.Text, textbox_dbfilename.Text, "", "", textbox_userid.Text, textbox_userpwd.Text);
+            DBParams masterDbParams = new DBParams(textbox_servername.Text, "master", "", "", "", "", textbox_userid.Text, textbox_userpwd.Text);
+            Database newDB = new Database(dbParams);
+            newDB.CreateDatabase(dbParams, masterDbParams);
         }
     }
 }

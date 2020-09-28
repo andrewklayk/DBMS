@@ -1,6 +1,6 @@
 ﻿namespace DBMS
 {
-    struct DBParams
+    public struct DBParams
     {
         public DBParams(string serverName, string dBName, string dBFileName, string dBFilePath, string logFileName, string logFilePath, string userId, string password)
         {
