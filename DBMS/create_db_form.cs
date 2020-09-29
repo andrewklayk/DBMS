@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DBMS
@@ -15,12 +8,14 @@ namespace DBMS
         public create_db_form()
         {
             InitializeComponent();
+            textbox_userid.Text = Global.masterParams.UserId;
+            textbox_userpwd.Text = Global.masterParams.Password;
         }
 
         private void create_db_btn_Click(object sender, EventArgs e)
         {
             if (textbox_servername.Text == ""/* || 
-                textbox_dbfilename.Text == "" */|| 
+                textbox_dbfilename.Text == "" */||
                 textbox_dbname.Text == ""/* || 
                 textbox_userid.Text == "" ||
                 textbox_userpwd.Text == ""*/)
