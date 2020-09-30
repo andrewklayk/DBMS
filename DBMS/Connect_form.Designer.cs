@@ -137,6 +137,7 @@
             this.MaximizeBox = false;
             this.Name = "Connect_form";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connect to a server";
             this.TopMost = true;
             this.ResumeLayout(false);

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DBMS
@@ -16,11 +13,11 @@ namespace DBMS
 
         public static void PopulateDatabaseList()
         {
-            if(databases == null)
+            if (databases == null)
             {
                 databases = new List<Database>();
             }
-            if(databaseNames == null)
+            if (databaseNames == null)
             {
                 databaseNames = new List<string>();
             }

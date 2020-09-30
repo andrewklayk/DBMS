@@ -1,6 +1,6 @@
 ﻿namespace DBMS
 {
-    partial class Form1
+    partial class InterfaceForm
     {
         /// <summary>
         /// Required designer variable.
@@ -47,7 +47,9 @@
             // 
             // DatabasesListBox
             // 
+            this.DatabasesListBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DatabasesListBox.FormattingEnabled = true;
+            this.DatabasesListBox.ItemHeight = 17;
             this.DatabasesListBox.Items.AddRange(new object[] {
             "a",
             "b",
@@ -55,7 +57,7 @@
             "d"});
             this.DatabasesListBox.Location = new System.Drawing.Point(12, 34);
             this.DatabasesListBox.Name = "DatabasesListBox";
-            this.DatabasesListBox.Size = new System.Drawing.Size(92, 485);
+            this.DatabasesListBox.Size = new System.Drawing.Size(106, 480);
             this.DatabasesListBox.TabIndex = 2;
             this.DatabasesListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DatabasesListView_MouseDoubleClick);
             // 
@@ -71,7 +73,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(263, 61);
+            this.button1.Location = new System.Drawing.Point(282, 61);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 4;
@@ -88,7 +90,7 @@
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // Form1
+            // InterfaceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -98,7 +100,7 @@
             this.Controls.Add(this.serv_label);
             this.Controls.Add(this.DatabasesListBox);
             this.Controls.Add(this.btn_newdb);
-            this.Name = "Form1";
+            this.Name = "InterfaceForm";
             this.Text = "DBMS Interface";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

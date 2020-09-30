@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -46,7 +43,7 @@ namespace DBMS
             return;
         }
 
-        public void AddTable (Table t)
+        public void AddTable(Table t)
         {
             tables.Add(t);
             SqlConnection con = new SqlConnection();
@@ -121,6 +118,8 @@ namespace DBMS
                     masterConnection.Open();
                     createCommand.ExecuteNonQuery();
                     MessageBox.Show($"Database {dbParams.DBName} dropped succesfully!", "DBMS", MessageBoxButtons.OK);
+                    Global.databases.Remove(this);
+                    Global.databaseNames.Remove(this.name);
                 }
                 catch (Exception e)
                 {
