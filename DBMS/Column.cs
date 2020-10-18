@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,11 +26,10 @@ namespace DBMS
     {
         public List<T> values;
 
-        public Column(string name, int index, DbDataTypes type1, Table table, List<T> v, Type t = null) : base(name, index, type1, table)
+        public Column(string name, int index, DbDataTypes type1, Table table, List<T> v, System.Type t = null) : base(name, index, type1, table)
         {
             type = t;
             values = v;
-            
         }
     }
 

@@ -11,32 +11,6 @@ namespace DBMS
         public Database database;
         public List<Column> columns;
         public int recordNumber;
-        public List<TableRow> rows;
-        public List<TableColumn> cols;
-
-        public class TableColumn
-        {
-            string name;
-            Type type;
-
-            public TableColumn(string name, Type type)
-            {
-                this.name = name;
-                this.type = type;
-            }
-        }
-        public class TableRow
-        {
-            int index;
-            List<object> values;
-            List<string> columnNames;
-            Table ownerTable;
-            public TableRow(Table t, int i)
-            {
-                ownerTable = t;
-                index = i;
-            }
-        }
 
         public Table(string tableName, int index, Database db)
         {
@@ -72,7 +46,6 @@ namespace DBMS
                     var values = new List<List<object>>();
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        cols.Add(new TableColumn("", ((IDataRecord)reader).GetFieldType(i)));
                         values.Add(new List<object>());
                     }
                     while (reader.Read())
