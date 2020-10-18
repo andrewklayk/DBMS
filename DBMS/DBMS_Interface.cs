@@ -1,6 +1,12 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Markup;
 
 namespace DBMS
 {
@@ -13,20 +19,24 @@ namespace DBMS
 
         private void btn_newdb_Click(object sender, EventArgs e)
         {
-            create_db_form createDbForm = new create_db_form();
-            createDbForm.Show();
+            using (create_db_form createDbForm = new create_db_form())
+            {
+                createDbForm.Show();
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Connect_form connectForm = new Connect_form();
-            if (connectForm.ShowDialog() == DialogResult.Cancel)
+            using (Connect_form connectForm = new Connect_form())
             {
-                this.Close();
+                if (connectForm.ShowDialog() == DialogResult.Cancel)
+                {
+                    this.Close();
+                }
             }
             serv_label.Text += Global.masterParams.ServerName;
             Global.PopulateDatabaseList();
-            DatabasesListBox.DataSource = Global.databaseNames;
+            DatabasesListBox.DataSource = Global.databases.Select(x => x.name).ToList();
             //DatabasesListView.
             /*foreach(Database db in Global.databases)
             {
@@ -42,21 +52,70 @@ namespace DBMS
             {
                 //string name = Global.databaseNames[index];
                 //Global.databases[index].DeleteDatabase(Global.masterParams);
-
+                Global.currentDb = index;
+                var tableNames = Global.databases[index].tables.Select(t => t.tableName).ToList();
+                TablesListBox.DataSource = tableNames;
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Column c1 = new Column<int>("Col1", 0, "INT");
-            Column c2 = new Column<string>("Col2", 0, "VARCHAR(255)");
-            List<Column> lc = new List<Column>
+
+            Table t = new Table("dbo.Customers", 0, Global.databases[4]);
+            t.TryRead(new SqlConnection(Database.BuildConnectionString(Global.databases[4].dbParams)));
+        }
+
+        private void TablesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            int index = TablesListBox.IndexFromPoint(e.Location);
+            if (index != ListBox.NoMatches)
             {
-                c1,
-                c2
-            };
-            Table t = new Table("test", 0, Global.databaseNames[9], lc);
-            Global.databases[8].AddTable(t);
+                DataTable table = new DataTable();
+                Global.currentTable = index;
+                //int rowCount = Global.databases[Global.currentDb].tables[index].columns[0].vales
+                var columnNames = Global.databases[Global.currentDb].tables[index].columns.Select(x => x.name);
+                List<List<object>> vals = new List<List<object>>();
+                var cols = Global.databases[Global.currentDb].tables[index].columns;
+                var colsNumber = cols.Count;
+                foreach (Column col in cols)
+                {
+                    col.GetType();
+                    table.Columns.Add(col.name);
+                }
+                for(int i = 0; i < Global.databases[Global.currentDb].tables[index].recordNumber; i++)
+                {
+
+                    var row = table.Rows.Add();
+                    for (var j = 0; j < colsNumber; j++) 
+                    {
+                        var c = cols[j];
+                        switch (c.dataType.ToString())
+                        {
+                            case "integer":
+                                row[cols[j].name] = (cols[j] as Column<int>).values[i];
+                                break;
+                            case "varchar":
+                                row[cols[j].name] = (cols[j] as Column<string>).values[i];
+                                break;
+                            case "nvarchar":
+                                row[cols[j].name] = (cols[j] as Column<string>).values[i];
+                                break;
+                            case "char":
+                                row[cols[j].name] = (cols[j] as Column<char>).values[i];
+                                break;
+                            case "nchar":
+                                row[cols[j].name] = (cols[j] as Column<char>).values[i];
+                                break;
+                            case "float":
+                            case "real":
+                                row[cols[j].name] = (cols[j] as Column<double>).values[i];
+                                break;
+                            default: throw new Exception("Cannot parse type: " + c.dataType.ToString());
+                        }
+                    }
+                }
+                dataGridView1.DataSource = table;
+            }
         }
     }
 }

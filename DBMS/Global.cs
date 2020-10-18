@@ -10,6 +10,8 @@ namespace DBMS
         public static DBParams masterParams;
         public static List<Database> databases;
         public static List<string> databaseNames;
+        public static int currentDb;
+        public static int currentTable;
 
         public static void PopulateDatabaseList()
         {
@@ -21,8 +23,10 @@ namespace DBMS
             {
                 databaseNames = new List<string>();
             }
-            SqlConnection masterConnection = new SqlConnection();
-            masterConnection.ConnectionString = Database.BuildConnectionString(masterParams);
+            SqlConnection masterConnection = new SqlConnection
+            {
+                ConnectionString = Database.BuildConnectionString(masterParams)
+            };
             string sqlGetAllDatabasesQuery = "SELECT name FROM master.sys.databases";
             using (SqlCommand com = new SqlCommand(sqlGetAllDatabasesQuery, masterConnection))
             {
@@ -34,9 +38,13 @@ namespace DBMS
                         while (reader.Read())
                         {
                             string name = reader.GetString(0);
+                            if (name == "msdb" || name == "model" || name == "master" || name == "tempdb")
+                                continue;
                             DBParams dp = new DBParams(Global.masterParams.ServerName, name, "", "", "", "", Global.masterParams.UserId, Global.masterParams.Password);
-                            Global.databases.Add(new Database(dp));
-                            Global.databaseNames.Add(name);
+                            Database d = new Database(dp);
+                            d.PopulateTableList();
+                            
+                            Global.databases.Add(d);
                         }
                     }
                 }
