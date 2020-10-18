@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+
 namespace DBMS
 {
     public class Table
@@ -11,6 +13,8 @@ namespace DBMS
         public Database database;
         public List<Column> columns;
         public int recordNumber;
+        List<Row> rows;
+        List<TableColumn> cols;
 
         public Table(string tableName, int index, Database db)
         {
@@ -19,6 +23,8 @@ namespace DBMS
             this.database = db;
             columns = new List<Column>();
             recordNumber = 0;
+            cols = new List<TableColumn>();
+            rows = new List<Row>();
         }
 
         public Table(string name, int index, Database db, List<Column> columns) : this(name, index, db)
@@ -46,14 +52,20 @@ namespace DBMS
                     var values = new List<List<object>>();
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
+                        var datarecord = ((IDataRecord)reader);
+                        cols.Add(new TableColumn(i, datarecord.GetFieldType(i), datarecord.GetDataTypeName(i), datarecord.GetName(i)));
                         values.Add(new List<object>());
                     }
                     while (reader.Read())
                     {
+                        var datarecord = ((IDataRecord)reader);
                         recordNumber++;
                         for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            values[i].Add(((IDataRecord)reader).GetValue(i));
+                            var a = new object[reader.FieldCount];
+                            datarecord.GetValues(a);
+                            rows.Add(new Row(0, a, this));
+                            values[i].Add(datarecord.GetValue(i));
                         }
                     }
                     for (int i = 0; i < reader.FieldCount; i++)
@@ -141,6 +153,42 @@ namespace DBMS
             if (a.columns.Count != b.columns.Count)
                 throw new Exception("Cannot compare tables with different column count");
             return null;
+        }
+
+        class Row
+        {
+            int index;
+            List<object> values;
+            Table ownerTable;
+
+            public Row(int index, List<object> values, Table ownerTable)
+            {
+                this.index = index;
+                this.values = values;
+                this.ownerTable = ownerTable;
+            }
+            public Row(int index, object[] values, Table ownerTable)
+            {
+                this.index = index;
+                this.values = values.ToList();
+                this.ownerTable = ownerTable;
+            }
+        }
+
+        class TableColumn
+        {
+            int index;
+            Type type;
+            string sqlType;
+            string name;
+
+            public TableColumn(int index, Type type, string sqlType, string name)
+            {
+                this.index = index;
+                this.type = type;
+                this.sqlType = sqlType;
+                this.name = name;
+            }
         }
     }
 }
