@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -8,7 +9,7 @@ namespace DBMS
     public class Database
     {
         public string name;
-        private DBParams dbParams;
+        public DBParams dbParams;
         public List<Table> tables;
         public Database(DBParams _dbParams)
         {
@@ -17,13 +18,62 @@ namespace DBMS
             tables = new List<Table>();
         }
 
-        public void AddColumn(Table t, Column c)
+        public void FillTableFromDb(Table t)
+        {
+            SqlConnection con = new SqlConnection
+            {
+                ConnectionString = BuildConnectionString(dbParams)
+            };
+        }
+
+        public void PopulateTableList()
+        {
+            string sqlGetTablesQuery = "SELECT * FROM INFORMATION_SCHEMA.TABLES";
+            SqlConnection con = new SqlConnection
+            {
+                ConnectionString = BuildConnectionString(dbParams)
+            };
+            using (SqlCommand com = new SqlCommand(sqlGetTablesQuery, con))
+            {
+                try
+                {
+                    con.Open();
+                    var reader = com.ExecuteReader();
+                    List<string> tableNames = new List<string>();
+                    while(reader.Read())
+                    {
+                        int nameIndex = ((IDataRecord)reader).GetOrdinal("TABLE_NAME");
+                        if (((IDataRecord)reader).GetString(nameIndex) != "sysdiagrams")
+                        {
+                            tableNames.Add(((IDataRecord)reader).GetString(nameIndex));
+                        }
+                    }
+                    reader.Close();
+                    foreach(string tn in tableNames)
+                    {
+                        Table t = new Table(tn, 0, this);
+                        t.TryRead(con);
+                        tables.Add(t);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+        /*public void AddColumn(Table t, Column c)
         {
             tables.Add(t);
-            SqlConnection con = new SqlConnection();
-            string sqlCreateTableQuery;
-            con.ConnectionString = BuildConnectionString(dbParams);
-            sqlCreateTableQuery = $" ALTER TABLE {t} ADD COLUMN {c.name} {c.type}";
+            SqlConnection con = new SqlConnection
+            {
+                ConnectionString = BuildConnectionString(dbParams)
+            };
+            string sqlCreateTableQuery = $" ALTER TABLE {t.tableName} ADD COLUMN {c.name} {c.type}";
             using (SqlCommand createCommand = new SqlCommand(sqlCreateTableQuery, con))
             {
                 try
@@ -41,21 +91,22 @@ namespace DBMS
                 }
             }
             return;
-        }
+        }*/
 
         public void AddTable(Table t)
         {
             tables.Add(t);
-            SqlConnection con = new SqlConnection();
-            string sqlCreateTableQuery;
-            con.ConnectionString = BuildConnectionString(dbParams);
-            sqlCreateTableQuery = $" CREATE TABLE {t.name}";
+            SqlConnection con = new SqlConnection
+            {
+                ConnectionString = BuildConnectionString(dbParams)
+            };
+            string sqlCreateTableQuery = $" CREATE TABLE {t.tableName}";
             if (t.columns.Count != 0)
             {
                 sqlCreateTableQuery += " (\n";
                 foreach (Column c in t.columns)
                 {
-                    sqlCreateTableQuery += $"{c.name} {c.type}, \n";
+                    sqlCreateTableQuery += $"{c.name} {c.dataType}, \n";
                 }
                 sqlCreateTableQuery += " );";
             }
@@ -109,8 +160,10 @@ namespace DBMS
         public void DeleteDatabase(DBParams masterParams)
         {
             string sqlDeleteQuery = $"DROP DATABASE {dbParams.DBName}";
-            SqlConnection masterConnection = new SqlConnection();
-            masterConnection.ConnectionString = BuildConnectionString(masterParams);
+            SqlConnection masterConnection = new SqlConnection
+            {
+                ConnectionString = BuildConnectionString(masterParams)
+            };
             using (SqlCommand createCommand = new SqlCommand(sqlDeleteQuery, masterConnection))
             {
                 try
@@ -136,5 +189,10 @@ namespace DBMS
         {
             return $"SERVER = {dbParams.ServerName}; DATABASE = {dbParams.DBName}; User ID ={dbParams.UserId}; Pwd = {dbParams.Password}";
         }
+
+        /*public void OpenConnection(DBParams dBParams)
+        {
+            BuildConnectionString(dbParams);
+        }*/
     }
 }

@@ -1,34 +1,146 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 namespace DBMS
 {
     public class Table
     {
-        public string name;
+        public string tableName;
         //public int index;
-        public string dbName;
+        public Database database;
         public List<Column> columns;
+        public int recordNumber;
 
-        public Table(string name, int index, string dbName)
+        public Table(string tableName, int index, Database db)
         {
-            this.name = name;
+            this.tableName = tableName;
             //this.index = index;
-            this.dbName = dbName;
+            this.database = db;
             columns = new List<Column>();
+            recordNumber = 0;
         }
 
-        public Table(string name, int index, string dbName, List<Column> columns) : this(name, index, dbName)
+        public Table(string name, int index, Database db, List<Column> columns) : this(name, index, db)
         {
             this.columns = columns;
         }
 
-        /*public void AddColumn<T>(Column<T> a)
+        /*public Column GetColumn(string columnName, SqlConnection con)
         {
-            columns.Add(a);
-            SqlConnection con = new SqlConnection();
-            string sqlAddTableQuery;
-            con.ConnectionString = BuildConnectionString(dbParams);
-            sqlAddTableQuery = $"CREATE TABLE {a.name}"
+            string sqlGetColumnQuery = $"SELECT {columnName} FROM {tableName}";
+
         }*/
+        public void PopulateColumns()
+        {
+
+        }
+
+        public bool TryRead(SqlConnection con)
+        {
+            using (SqlCommand com = new SqlCommand($"SELECT * FROM {tableName}", con))
+            {
+                try
+                {
+                    SqlDataReader reader = com.ExecuteReader();
+                    var values = new List<List<object>>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        values.Add(new List<object>());
+                    }
+                    while (reader.Read())
+                    {
+                        recordNumber++;
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            values[i].Add(((IDataRecord)reader).GetValue(i));
+                        }
+                    }
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        columns.Add(ColumnFactory.CreateColumn(((IDataRecord)reader).GetDataTypeName(i), this, ((IDataRecord)reader).GetName(i), values[i], i));
+                    }
+                    reader.Close();
+                    return true;
+                }
+                catch(Exception e)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool TryInsertIntoColumn<T>(Column<T> a, SqlConnection con, T value)
+        {
+            string sqlAddTableQuery = $"INSERT INTO {a.name} ";
+            using (SqlCommand com = new SqlCommand(sqlAddTableQuery, con))
+            {
+                try
+                {
+                    con.Open();
+                    com.ExecuteNonQuery();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public bool TryAddColumn(Column a, SqlConnection con)
+        {
+            string sqlAddColumnQuery = $"ALTER TABLE {this.tableName} ADD COLUMN {a.name} {a.dataType}";
+            using (SqlCommand com = new SqlCommand(sqlAddColumnQuery, con))
+            {
+                try
+                {
+                    con.Open();
+                    com.ExecuteNonQuery();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public bool TryDropColumn(Column a, SqlConnection con)
+        {
+            string sqlAddTableQuery = $"ALTER TABLE {this.tableName} DROP COLUMN {a.name}";
+            using (SqlCommand com = new SqlCommand(sqlAddTableQuery, con))
+            {
+                try
+                {
+                    con.Open();
+                    com.ExecuteNonQuery();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public Table Difference(Table a, Table b)
+        {
+            if (a.columns.Count != b.columns.Count)
+                throw new Exception("Cannot compare tables with different column count");
+            return null;
+        }
     }
 }
