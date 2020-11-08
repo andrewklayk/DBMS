@@ -19,10 +19,10 @@ namespace DBMS
 
         private void btn_newdb_Click(object sender, EventArgs e)
         {
-            /*using (create_db_form createDbForm = new create_db_form())
+            using (create_db_form createDbForm = new create_db_form())
             {
                 createDbForm.Show();
-            }*/
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -119,24 +119,6 @@ namespace DBMS
                 //    }
                 //}
                 //dataGridView1.DataSource = table;
-            }
-        }
-
-        private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
-        {
-            object primaryKey = e.Row.Cells[Global.currentTable.primaryKeyName].Value;
-            SqlConnection con = new SqlConnection(Database.BuildConnectionString(Global.currentTable.database.dbParams));
-            if (!Global.currentTable.TryDropRow(primaryKey, con))
-                MessageBox.Show("Error", "Error", MessageBoxButtons.OK);
-        }
-
-        private void deleteTableToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show($"Delete table {TablesListBox.SelectedItem} ?", "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                Global.currentDb.DropTable(TablesListBox.SelectedItem.ToString());
-                TablesListBox.Refresh();
-                Global.currentTable = null;
             }
         }
     }

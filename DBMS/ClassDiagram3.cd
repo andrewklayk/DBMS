@@ -1,26 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="DBMS.Column">
-    <Position X="8" Y="3.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAgAAAAAAAABAAAAAAAAAAAAFAAAAAAAAAAABAAA=</HashCode>
-      <FileName>Column.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DBMS.Column&lt;T&gt;">
-    <Position X="8" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
-      <FileName>Column.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DBMS.ColumnFactory">
-    <Position X="8" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Column.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="DBMS.Database">
     <Position X="0.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
@@ -31,7 +10,7 @@
   <Class Name="DBMS.Table">
     <Position X="4" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAACAAAAAAAADAAAAAAAAAQAAAAAABCAAACAAAAAQ=</HashCode>
+      <HashCode>BAAAAAAAAAAAAEDAAAAAAIAAQAAAAEABCAAACAAAAAQ=</HashCode>
       <FileName>Table.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -40,6 +19,21 @@
     <TypeIdentifier>
       <HashCode>gAAEAAAAACAAAABAgAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
       <FileName>Global.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DBMS.TableRow">
+    <Position X="7.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAACCAAAAAgAAAAAAA=</HashCode>
+      <FileName>TableRow.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DBMS.TableColumn">
+    <Position X="7.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAIAAAAAAAAAAAQAAAAEAAAAAAAAAQABAAA=</HashCode>
+      <FileName>TableColumn.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="DBMS.DBParams">

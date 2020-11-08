@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Markup;
 
 namespace DBMS
 {
@@ -10,15 +7,15 @@ namespace DBMS
     {
         public string name;
         public int index;
-        public DbDataTypes dataType;
+        //public DbDataTypes dataType;
         public Table table;
         public Type type;
 
-        protected Column(string name, int index, DbDataTypes dataType, Table table)
+        protected Column(string name, int index, /*DbDataTypes dataType,*/ Table table)
         {
             this.name = name;
             this.index = index;
-            this.dataType = dataType;
+            //this.dataType = dataType;
             this.table = table;
         }
     }
@@ -26,7 +23,7 @@ namespace DBMS
     {
         public List<T> values;
 
-        public Column(string name, int index, DbDataTypes type1, Table table, List<T> v, System.Type t = null) : base(name, index, type1, table)
+        public Column(string name, int index, /*DbDataTypes type1,*/ Table table, List<T> v, System.Type t = null) : base(name, index, table)
         {
             type = t;
             values = v;
@@ -39,7 +36,7 @@ namespace DBMS
         {
             switch (type)
             {
-                case "smallint":
+                /*case "smallint":
                 case "int":
                     List<int> intList = values.Select(x => (int)x).ToList();
                     var integerColumn = new Column<int>(name, 1, DbDataTypes.integer, table, intList);
@@ -67,7 +64,7 @@ namespace DBMS
                 /*case DbDataTypes.dbenum:
                     var enumColumn = new Column<Dictionary<string, string>>(name, 1, DbDataTypes.dbenum, table);
                     return enumColumn;*/
-                default: 
+                default:
                     throw new Exception("Unable to detect type: " + type.ToString());
             }
         }

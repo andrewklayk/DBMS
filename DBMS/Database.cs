@@ -1,46 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Windows.Forms;
+using System.Linq;
+using System.Runtime.Serialization;
 
 namespace DBMS
 {
+    [DataContract]
     public class Database
     {
-        public string name;
-        public DBParams dbParams;
-        public List<Table> tables;
+        //public string name;
+        private DBParams dbParams;
+
+        public List<Table> Tables { get; set; }
+        public DBParams DbParams { get => dbParams; set => dbParams = value; }
+
+        public Database()
+        {
+
+        }
         public Database(DBParams _dbParams)
         {
-            name = _dbParams.DBName;
-            dbParams = _dbParams;
-            tables = new List<Table>();
+            //name = _dbParams.DBName;
+            DbParams = _dbParams;
+            Tables = new List<Table>();
         }
 
-        public void FillTableFromDb(Table t)
+        public Database(string name, List<Table> tables)
         {
-            SqlConnection con = new SqlConnection
-            {
-                ConnectionString = BuildConnectionString(dbParams)
-            };
+            //name = _dbParams.DBName;
+            DbParams = new DBParams { DBName = name };
+            Tables = tables;
         }
 
         public void PopulateTableList()
         {
             string sqlGetTablesQuery = "SELECT * FROM INFORMATION_SCHEMA.TABLES";
-            SqlConnection con = new SqlConnection
+            using (SqlConnection con = new SqlConnection
             {
-                ConnectionString = BuildConnectionString(dbParams)
-            };
-            using (SqlCommand com = new SqlCommand(sqlGetTablesQuery, con))
+                ConnectionString = BuildConnectionString(DbParams)
+            })
             {
-                try
+                using (SqlCommand com = new SqlCommand(sqlGetTablesQuery, con))
                 {
                     con.Open();
                     var reader = com.ExecuteReader();
                     List<string> tableNames = new List<string>();
-                    while(reader.Read())
+                    while (reader.Read())
                     {
                         int nameIndex = ((IDataRecord)reader).GetOrdinal("TABLE_NAME");
                         if (((IDataRecord)reader).GetString(nameIndex) != "sysdiagrams")
@@ -49,82 +55,61 @@ namespace DBMS
                         }
                     }
                     reader.Close();
-                    foreach(string tn in tableNames)
+                    foreach (string tn in tableNames)
                     {
                         Table t = new Table(tn, 0, this);
                         t.TryRead(con);
-                        tables.Add(t);
+                        Tables.Add(t);
                     }
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-                }
-                finally
-                {
-                    con.Close();
-                }
+                con.Close();
+                
             }
         }
-        /*public void AddColumn(Table t, Column c)
+
+        public void DropTable(string tableName)
         {
-            tables.Add(t);
             SqlConnection con = new SqlConnection
             {
-                ConnectionString = BuildConnectionString(dbParams)
+                ConnectionString = BuildConnectionString(DbParams)
             };
-            string sqlCreateTableQuery = $" ALTER TABLE {t.tableName} ADD COLUMN {c.name} {c.type}";
-            using (SqlCommand createCommand = new SqlCommand(sqlCreateTableQuery, con))
+            string sqlDropTableQuery = $"DROP TABLE {tableName}";
+            using (SqlCommand createCommand = new SqlCommand(sqlDropTableQuery, con))
             {
-                try
-                {
-                    con.Open();
-                    createCommand.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-                }
-                finally
-                {
-                    con.Close();
-                }
+                con.Open();
+                createCommand.ExecuteNonQuery();
+                Tables.RemoveAll(x => x.TableName == tableName);
+                con.Close();
             }
             return;
-        }*/
+        }
 
         public void AddTable(Table t)
         {
-            tables.Add(t);
+            Tables.Add(t);
             SqlConnection con = new SqlConnection
             {
-                ConnectionString = BuildConnectionString(dbParams)
+                ConnectionString = BuildConnectionString(DbParams)
             };
-            string sqlCreateTableQuery = $" CREATE TABLE {t.tableName}";
-            if (t.columns.Count != 0)
+            string sqlCreateTableQuery = $" CREATE TABLE {t.TableName}";
+            if (t.Cols.Count != 0)
             {
-                sqlCreateTableQuery += " (\n";
-                foreach (Column c in t.columns)
+                sqlCreateTableQuery += "(";
+                foreach (TableColumn c in t.Cols)
                 {
-                    sqlCreateTableQuery += $"{c.name} {c.dataType}, \n";
+                    sqlCreateTableQuery += $"{c.Name} {c.SqlType} ";
+                    if (t.PrimaryKeyName == c.Name)
+                        sqlCreateTableQuery += "PRIMARY KEY";
+                    sqlCreateTableQuery += ",";
                 }
-                sqlCreateTableQuery += " );";
+                sqlCreateTableQuery = sqlCreateTableQuery.Remove(sqlCreateTableQuery.Length-1,1);
+                sqlCreateTableQuery += ");";
             }
             using (SqlCommand createCommand = new SqlCommand(sqlCreateTableQuery, con))
             {
-                try
-                {
-                    con.Open();
-                    createCommand.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-                }
-                finally
-                {
-                    con.Close();
-                }
+                con.Open();
+                createCommand.ExecuteNonQuery();
+                con.Close();
             }
             return;
         }
@@ -132,62 +117,38 @@ namespace DBMS
         public void CreateDatabase(DBParams masterParams)
         {
             SqlConnection masterConnection = new SqlConnection();
-            string sqlCreateDbQuery;
             masterConnection.ConnectionString = BuildConnectionString(masterParams);
-            sqlCreateDbQuery = $" CREATE DATABASE {dbParams.DBName} " +
-                $"ON PRIMARY (NAME = {dbParams.DBFileName}, FILENAME = '{dbParams.DBFilePath}')";/* +
+            string sqlCreateDbQuery = $" CREATE DATABASE {DbParams.DBName}";/* +
                 $"LOG ON (NAME = {dbParams.LogFileName}, FILENAME = {dbParams.LogFilePath})";*/
             using (SqlCommand createCommand = new SqlCommand(sqlCreateDbQuery, masterConnection))
             {
-                try
-                {
-                    masterConnection.Open();
-                    createCommand.ExecuteNonQuery();
-                    MessageBox.Show($"Database {dbParams.DBName} created succesfully!", "DBMS", MessageBoxButtons.OK);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-                }
-                finally
-                {
-                    masterConnection.Close();
-                }
+                masterConnection.Open();
+                createCommand.ExecuteNonQuery();
+                masterConnection.Close();
             }
             return;
         }
 
         public void DeleteDatabase(DBParams masterParams)
         {
-            string sqlDeleteQuery = $"DROP DATABASE {dbParams.DBName}";
+            string sqlDeleteQuery = $"DROP DATABASE {DbParams.DBName}";
             SqlConnection masterConnection = new SqlConnection
             {
                 ConnectionString = BuildConnectionString(masterParams)
             };
             using (SqlCommand createCommand = new SqlCommand(sqlDeleteQuery, masterConnection))
             {
-                try
-                {
-                    masterConnection.Open();
-                    createCommand.ExecuteNonQuery();
-                    MessageBox.Show($"Database {dbParams.DBName} dropped succesfully!", "DBMS", MessageBoxButtons.OK);
-                    Global.databases.Remove(this);
-                    Global.databaseNames.Remove(this.name);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString(), "DBMS", MessageBoxButtons.OK);
-                }
-                finally
-                {
-                    masterConnection.Close();
-                }
+                masterConnection.Open();
+                createCommand.ExecuteNonQuery();
+                GlobalContext.Databases.Remove(this);
+                GlobalContext.databaseNames.Remove(this.DbParams.DBName);
+                masterConnection.Close();
             }
             return;
         }
         public static string BuildConnectionString(DBParams dbParams)
         {
-            return $"SERVER = {dbParams.ServerName}; DATABASE = {dbParams.DBName}; User ID ={dbParams.UserId}; Pwd = {dbParams.Password}";
+            return $"SERVER = {dbParams.ServerName}; DATABASE = {dbParams.DBName}; User ID ={dbParams.UserId}; Pwd = {dbParams.Password}; Pooling=false";
         }
 
         /*public void OpenConnection(DBParams dBParams)

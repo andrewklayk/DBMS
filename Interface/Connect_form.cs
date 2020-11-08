@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DBMS;
+using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
-namespace DBMS
+namespace Interface
 {
     public partial class Connect_form : Form
     {
@@ -18,12 +19,12 @@ namespace DBMS
             {
                 masterConnection.ConnectionString = $"SERVER = {textbox_servername.Text}; User ID = {textbox_userid.Text}; Pwd = {textbox_userpwd.Text}";
                 masterConnection.Open();
-                Global.masterParams = new DBParams(textbox_servername.Text, "master", "", "", "", "", textbox_userid.Text, textbox_userpwd.Text);
+                GlobalContext.masterParams = new DBParams(textbox_servername.Text, "master", "", "", "", "", textbox_userid.Text, textbox_userpwd.Text);
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.ToString(), "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.DialogResult = DialogResult.None;
+                MessageBox.Show(exc.Message, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogResult = DialogResult.None;
             }
             finally
             {

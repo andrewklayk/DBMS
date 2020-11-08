@@ -1,4 +1,4 @@
-﻿namespace DBMS
+﻿namespace Interface
 {
     partial class InterfaceForm
     {
@@ -32,14 +32,15 @@
             this.btn_newdb = new System.Windows.Forms.Button();
             this.DatabasesListBox = new System.Windows.Forms.ListBox();
             this.serv_label = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.TablesListBox = new System.Windows.Forms.ListBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
+            this.addTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_newdb
@@ -78,16 +79,6 @@
             this.serv_label.TabIndex = 3;
             this.serv_label.Text = "Server: ";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(808, 61);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(808, 90);
@@ -114,6 +105,21 @@
             this.TablesListBox.TabIndex = 6;
             this.TablesListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.TablesListBox_MouseDoubleClick);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteTableToolStripMenuItem,
+            this.addTableToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
+            // 
+            // deleteTableToolStripMenuItem
+            // 
+            this.deleteTableToolStripMenuItem.Name = "deleteTableToolStripMenuItem";
+            this.deleteTableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteTableToolStripMenuItem.Text = "Delete table";
+            this.deleteTableToolStripMenuItem.Click += new System.EventHandler(this.deleteTableToolStripMenuItem_Click);
+            // 
             // dataGridView1
             // 
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -124,19 +130,21 @@
             this.dataGridView1.TabIndex = 7;
             this.dataGridView1.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dataGridView1_UserDeletingRow);
             // 
-            // contextMenuStrip1
+            // button1
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteTableToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 26);
+            this.button1.Location = new System.Drawing.Point(808, 61);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
             // 
-            // deleteTableToolStripMenuItem
+            // addTableToolStripMenuItem
             // 
-            this.deleteTableToolStripMenuItem.Name = "deleteTableToolStripMenuItem";
-            this.deleteTableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deleteTableToolStripMenuItem.Text = "Delete table";
-            this.deleteTableToolStripMenuItem.Click += new System.EventHandler(this.deleteTableToolStripMenuItem_Click);
+            this.addTableToolStripMenuItem.Name = "addTableToolStripMenuItem";
+            this.addTableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addTableToolStripMenuItem.Text = "Add table";
+            this.addTableToolStripMenuItem.Click += new System.EventHandler(this.addTableToolStripMenuItem_Click);
             // 
             // InterfaceForm
             // 
@@ -153,8 +161,8 @@
             this.Name = "InterfaceForm";
             this.Text = "DBMS Interface";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -165,12 +173,13 @@
         private System.Windows.Forms.Button btn_newdb;
         private System.Windows.Forms.ListBox DatabasesListBox;
         private System.Windows.Forms.Label serv_label;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox TablesListBox;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteTableToolStripMenuItem;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripMenuItem addTableToolStripMenuItem;
     }
 }
 

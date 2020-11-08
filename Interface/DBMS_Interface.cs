@@ -1,14 +1,11 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
+﻿using DBMS;
+using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Markup;
 
-namespace DBMS
+namespace Interface
 {
     public partial class InterfaceForm : Form
     {
@@ -19,10 +16,10 @@ namespace DBMS
 
         private void btn_newdb_Click(object sender, EventArgs e)
         {
-            /*using (create_db_form createDbForm = new create_db_form())
+            using (create_db_form createDbForm = new create_db_form())
             {
                 createDbForm.Show();
-            }*/
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -31,18 +28,12 @@ namespace DBMS
             {
                 if (connectForm.ShowDialog() == DialogResult.Cancel)
                 {
-                    this.Close();
+                    Close();
                 }
             }
-            serv_label.Text += Global.masterParams.ServerName;
-            Global.PopulateDatabaseList();
-            DatabasesListBox.DataSource = Global.databases.Select(x => x.name).ToList();
-            //DatabasesListView.
-            /*foreach(Database db in Global.databases)
-            {
-                //DatabasesListView.Items.Add(new ListViewItem(Global.masterParams.ServerName));
-                DatabasesListView.Items.Add(new ListViewItem(db.name));
-            }*/
+            serv_label.Text += GlobalContext.masterParams.ServerName;
+            GlobalContext.PopulateDatabaseList();
+            DatabasesListBox.DataSource = GlobalContext.Databases.Select(x => x.DbParams.DBName).ToList();
         }
 
         private void DatabasesListView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -50,27 +41,24 @@ namespace DBMS
             int index = DatabasesListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                //string name = Global.databaseNames[index];
-                //Global.databases[index].DeleteDatabase(Global.masterParams);
-                Global.currentDb = Global.databases[index];
-                var tableNames = Global.databases[index].tables.Select(t => t.tableName).ToList();
-                TablesListBox.DataSource = tableNames;
+                GlobalContext.currentDb = GlobalContext.Databases[index];
+                TablesListBox.DataSource = GlobalContext.Databases[index].Tables.Select(t => t.TableName).ToList(); ;
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        /*private void button1_Click(object sender, EventArgs e)
         {
             Table t = new Table("dbo.Customers", 0, Global.databases[4]);
             t.TryRead(new SqlConnection(Database.BuildConnectionString(Global.databases[4].dbParams)));
-        }
+        }*/
 
         private void TablesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             int index = TablesListBox.IndexFromPoint(e.Location);
             if (index != ListBox.NoMatches)
             {
-                Global.currentTable = Global.currentDb.tables[index];
-                dataGridView1.DataSource = Global.currentDb.tables[index].ToDataTable();
+                GlobalContext.currentTable = GlobalContext.currentDb.Tables[index];
+                dataGridView1.DataSource = GlobalContext.currentDb.Tables[index].ToDataTable();
                 /*MessageBox.Show(Global.databases[Global.currentDb].tables[index].Rows[0].Values[1].ToString());
                 //int rowCount = Global.databases[Global.currentDb].tables[index].columns[0].vales
                 var columnNames = Global.databases[Global.currentDb].tables[index].columns.Select(x => x.name);
@@ -124,9 +112,9 @@ namespace DBMS
 
         private void dataGridView1_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
-            object primaryKey = e.Row.Cells[Global.currentTable.primaryKeyName].Value;
-            SqlConnection con = new SqlConnection(Database.BuildConnectionString(Global.currentTable.database.dbParams));
-            if (!Global.currentTable.TryDropRow(primaryKey, con))
+            object primaryKey = e.Row.Cells[GlobalContext.currentTable.PrimaryKeyName].Value;
+            SqlConnection con = new SqlConnection(Database.BuildConnectionString(GlobalContext.currentTable.Database.DbParams));
+            if (!GlobalContext.currentTable.TryDropRow(primaryKey, con))
                 MessageBox.Show("Error", "Error", MessageBoxButtons.OK);
         }
 
@@ -134,10 +122,23 @@ namespace DBMS
         {
             if (MessageBox.Show($"Delete table {TablesListBox.SelectedItem} ?", "Are you sure?", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                Global.currentDb.DropTable(TablesListBox.SelectedItem.ToString());
-                TablesListBox.Refresh();
-                Global.currentTable = null;
+                try
+                {
+                    GlobalContext.currentDb.DropTable(TablesListBox.SelectedItem.ToString());
+                    TablesListBox.Refresh();
+                    GlobalContext.currentTable = null;
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Failed to drop table", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
+        }
+
+        private void addTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var f = new addTableForm();
+            f.ShowDialog();
         }
     }
 }

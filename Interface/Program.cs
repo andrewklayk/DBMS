@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace DBMS
+namespace Interface
 {
     static class Program
     {
@@ -9,8 +9,11 @@ namespace DBMS
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new InterfaceForm());
         }
     }
 }
