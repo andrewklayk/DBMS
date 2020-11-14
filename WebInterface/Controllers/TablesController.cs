@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using DBMS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,17 +15,55 @@ namespace WebInterface.Controllers
     [ApiController]
     public class TablesController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<Table> Get(int dbId)
+        public IEnumerable<SerVR<TableViewModel>> GetSerializedTables(int dbId)
         {
-            return GlobalContext.Databases[dbId].Tables;
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("delete", path, "delete");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                deleteLink
+            };
+            var viewModels = GlobalContext.Databases[dbId].Tables.Select(x => new TableViewModel(x));
+            return viewModels.Select(x => new SerVR<TableViewModel>
+                                                                (x, new List<Link> { new Link("self", selfLink.Href + $"/{x.index}", "get"),
+                                                                                     new Link("rows", selfLink.Href + $"/{x.index}" + "/rows", "get"),
+                                                                                     new Link("delete", selfLink.Href + $"/{x.index}", "post")}
+                                                                .ToList()));
+        }
+        [HttpGet]
+        public SerVR<IEnumerable<SerVR<TableViewModel>>> Get(int dbId)
+        {
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("delete", path, "delete");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                deleteLink
+            };
+            return new SerVR<IEnumerable<SerVR<TableViewModel>>>
+                (GetSerializedTables(dbId), new List<Link>{ selfLink, postLink });
         }
 
         // GET: api/
         [HttpGet("{tableId}")]
-        public Table Get(int dbId, int tableId)
+        public SerVR<Table> Get(int dbId, int tableId)
         {
-            return GlobalContext.Databases[dbId].Tables[tableId];
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("delete", path, "delete");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                postLink,
+                deleteLink
+            };
+            return new SerVR<Table>(GlobalContext.Databases[dbId].Tables[tableId],links);
         }
 
 

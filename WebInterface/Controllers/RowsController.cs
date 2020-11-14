@@ -19,18 +19,46 @@ namespace WebInterface.Controllers
     [ApiController]
     public class RowsController : ControllerBase
     {
+        public IEnumerable<SerVR<TableRow>> GetSerializedRows(int dbId, int tblId)
+        {
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link deleteLink = new Link("delete", path, "delete");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                deleteLink
+            };
+            return GlobalContext.Databases[dbId].Tables[tblId].Rows.Select(x => new SerVR<TableRow>(x, links.Select(y => new Link(y.Rel, y.Href + $"/{x.RowId}", y.Method)).ToList()));
+        }
         // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<TableRow> Get(int dbId, int tblId)
+        public SerVR<IEnumerable<SerVR<TableRow>>> Get(int dbId, int tblId)
         {
-            return GlobalContext.Databases[dbId].Tables[tblId].Rows;
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                postLink
+            };
+            return new SerVR<IEnumerable<SerVR<TableRow>>>(GetSerializedRows(dbId, tblId), links);
         }
 
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
         public TableRow GetAt(int dbId, int tblId, int rowId)
         {
-            return GlobalContext.Databases[dbId].Tables[tblId].Rows[rowId];
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link deleteLink = new Link("delete", path, "delete");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                deleteLink
+            };
+            return new RowSerialize(GlobalContext.Databases[dbId].Tables[tblId].Rows[rowId], links);
         }
 
         // POST api/<ValuesController>

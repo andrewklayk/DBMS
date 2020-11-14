@@ -6,7 +6,6 @@ using System.Data;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebInterface.ViewModels;
 using Microsoft.EntityFrameworkCore.Internal;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,12 +16,46 @@ namespace WebInterface.Controllers
     [ApiController]
     public class DatabasesController : ControllerBase
     {
+        public int GetDbIndex(Database db)
+        {
+            return GlobalContext.Databases.IndexOf(db);
+        }
+
+        public IEnumerable<SerVR<DbVM>> GetSerializedDbs()
+        {
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("delete", path, "post");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                postLink
+            };
+            var viewModels = GlobalContext.Databases.Select(x => new DbVM(x));
+            var enumerable = (viewModels.Select(
+                            x => new SerVR<DbVM>(x, new List<Link> { new Link("self", selfLink.Href + $"/{x.dbIndex}", "get"), new Link("tables", selfLink.Href + $"/{x.dbIndex}" + "/tables", "get"), new Link("delete", selfLink.Href + $"/{x.dbIndex}", "delete") })));
+            return enumerable;
+        }
         //DbmsContext dbmsContext = new DbmsContext();
         // GET: api/<DatabasesController>
         [HttpGet]
-        public IEnumerable<Database> Get()
+        public SerVR<IEnumerable<SerVR<DbVM>>> Get()
         {
-            return GlobalContext.Databases;
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            GetSerializedDbs();
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("add", path, "post");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                postLink
+            };
+            return new SerVR<IEnumerable<SerVR<DbVM>>>(GetSerializedDbs(), links);
+            //return new SerVR<IEnumerable<SerVR<DbVM>>>
+            //   (GlobalContext.Databases.Select(x => new SerVR<DbVM>(new DbVM(x.DbParams, x.Tables.Select(y=>y.TableName)), new List<Link> {new Link("self", selfLink.Href + $"/{GetDbIndex(x)}", "get"),new Link("tables", selfLink.Href + $"/{GetDbIndex(x)}" + "/tables", "get"),new Link("delete", selfLink.Href + $"/{GetDbIndex(x)}", "delete")})), links);
+            //return new SerializationWrapper<IEnumerable<SerializationWrapper<Database>>>(GlobalContext.Databases.Select(x=>new SerializationWrapper<Database>));
             //return new string[] { "value1", "value2" };
         }
 
@@ -30,6 +63,15 @@ namespace WebInterface.Controllers
         [HttpGet("{id}")]
         public Database Get(int id)
         {
+            var path = Request.Scheme + "://" + Request.Host + Request.Path;
+            Link selfLink = new Link("self", path, "get");
+            Link postLink = new Link("add", path, "post");
+            Link deleteLink = new Link("add", path, "post");
+            List<Link> links = new List<Link>
+            {
+                selfLink,
+                postLink
+            };
             return GlobalContext.Databases.ElementAt(id);
         }
 

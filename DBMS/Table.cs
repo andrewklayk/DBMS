@@ -17,13 +17,20 @@ namespace DBMS
         public int recordNumber;
         public string TableName { get; set; }
         public string PrimaryKeyName { get; set; }
-
         public List<TableRow> Rows { get; set; }
         public List<TableColumn> Cols { get; set; }
         [JsonIgnore]
         public Database Database { get => database; set => database = value; }
 
         public Table() { }
+        public Table(Table t) {
+            Rows = t.Rows;
+            Cols = t.Cols;
+            Database = t.Database;
+            TableName = t.TableName;
+            PrimaryKeyName = t.PrimaryKeyName;
+            recordNumber = t.recordNumber;
+        }
 
         public Table(string tableName, int index, Database db)
         {
@@ -102,7 +109,7 @@ namespace DBMS
                         {
                             values[i].Add(datarecord.GetValue(i));
                         }*/
-                        Rows.Add(new TableRow(a, this));
+                        Rows.Add(new TableRow(a, this, recordNumber));
                         recordNumber++;
                     }
                     reader.Close();

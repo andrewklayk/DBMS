@@ -134,7 +134,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbVM.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="Link.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RowSerialize.cs" />
+    <Compile Include="SerVR.cs" />
     <Compile Include="TableRow.cs" />
     <Compile Include="TableColumn.cs" />
     <Compile Include="Column.cs" />
@@ -143,6 +148,8 @@
     <Compile Include="GlobalContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Table.cs" />
+    <Compile Include="TableSerialize.cs" />
+    <Compile Include="TableViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
